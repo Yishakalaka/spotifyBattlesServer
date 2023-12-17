@@ -1,0 +1,39 @@
+<!-- DO NOT MODIFY THIS FILE -->
+<!doctype html>
+<html lang="en">
+
+<head>
+	<meta charset="utf-8" />
+	<title>Battle Info</title>
+    <link rel="stylesheet" href="/style.css">
+</head>
+
+<body>
+	<h1>SPOTIFY BATTLES</h1>
+
+    <h2>Battle Info</h2>
+	<form id="enterPlayers" action="http://localhost:3000/application" method="post">
+		<fieldset>
+            <legend>Player 1</legend>
+            <strong>Name: </strong><input type="text" name="playerone">
+            <strong>Spotify Username: </strong><input type="text" name="userone">
+        </fieldset>
+
+        <hr>
+
+        <fieldset>
+            <legend>Player 2</legend>
+            <strong>Name: </strong><input type="text" name="playertwo">
+            <strong>Spotify Username: </strong><input type="text" name="usertwo">
+        </fieldset>
+
+		<br>
+		<input type="submit" value="Battle"/>
+        <input type="reset" value="Reset">
+	</form>
+
+    <hr>
+    <a href="/">HOME</a>
+</body>
+
+</html>
