@@ -5,14 +5,27 @@
 <head>
 	<meta charset="utf-8" />
 	<title>Battle Info</title>
-    <link rel="stylesheet" href="/style.css">
 </head>
+
+<style>
+    html {
+        font-size: 14px;
+    }
+
+    body {
+        background-color: darkred;
+    }
+
+    h1 {
+        color: darkgreen;
+    }
+</style>
 
 <body>
 	<h1>SPOTIFY BATTLES</h1>
 
     <h2>Battle Info</h2>
-	<form id="enterPlayers" action="http://localhost:3000/application" method="post">
+	<form id="enterPlayers" action="http://localhost:3000/battle" method="post">
 		<fieldset>
             <legend>Player 1</legend>
             <strong>Name: </strong><input type="text" name="playerone">

@@ -5,16 +5,28 @@
 <head>
 	<meta charset="utf-8" />
 	<title>Battle Result</title>
-    <link rel="stylesheet" href="/style.css">
 </head>
+
+<style>
+    html {
+        font-size: 14px;
+    }
+
+    body {
+        background-color: darkred;
+    }
+
+    h1 {
+        color: darkgreen;
+    }
+</style>
 
 <body>
 	<h1>Battle Result</h1>
 
 	<h2><%- playerone %> vs <%- playertwo %></h2><br>
 
-    WINNER is<br>
-    <img id="winnerImage" alt="winnerImage">
+    WINNER is <%- winner %>, who has <%- followCount %> followers
     <hr>
     <a href="/">HOME</a>
 </body>

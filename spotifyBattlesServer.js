@@ -2,7 +2,9 @@ const express = require("express"); /* Accessing express module */
 const app = express(); /* app is a request handler function */
 const path = require("path");
 const bodyParser = require("body-parser");
+const SpotifyWebApi = require("spotify-web-api-node");
 const portNumber = 3000;
+const axios = require('axios');
 
 app.listen(portNumber);
 
@@ -10,26 +12,6 @@ require("dotenv").config({ path: path.resolve(__dirname, 'credentialsDontPost/.e
 const uri = process.env.MONGO_CONNECTION_STRING;
 const databaseAndCollection = {db: "SPOTIFY_VS", collection:"spotifyBattles"};
 const { MongoClient, ServerApiVersion } = require('mongodb');
-
-var client_id = 'b29bdd67f2884531a4dca11050912122';
-var client_secret = 'b684d04c15444e54ae630fd885e013ba';
-
-var authOptions = {
-  url: 'https://accounts.spotify.com/api/token',
-  headers: {
-    'Authorization': 'Basic ' + (new Buffer.from(client_id + ':' + client_secret).toString('base64'))
-  },
-  form: {
-    grant_type: 'client_credentials'
-  },
-  json: true
-};
-
-request.post(authOptions, function(error, response, body) {
-  if (!error && response.statusCode === 200) {
-    var token = body.access_token;
-  }
-});
 
 app.set("views", path.resolve(__dirname, "templates"));
 app.set("view engine", "ejs");
@@ -46,51 +28,68 @@ app.get("/battle", (req, res) => {
 
 app.post("/battle", (req, res) => {
     let {playerone, userone, playertwo, usertwo} = req.body;
-    let winner;
+    let winner, winUser;
 
     if (userone === "yishaka2002") {
         winner = playerone;
+        winUser = userone;
     }
     else if (usertwo === "yishaka2002") {
         winner = playertwo;
+        winUser = usertwo;
     }
     else {
         let toss = Math.random();
 
         if (toss < 0.5) {
             winner = playerone;
+            winUser = userone;
         }
         else {
             winner = playertwo;
+            winUser = usertwo;
         }
     }
-
-    const variables = {
-        playerone: playerone,
-        playertwo: playertwo
-    };
 
     (async () => {
         const client = new MongoClient(uri, { useNewUrlParser: true, useUnifiedTopology: true, serverApi: ServerApiVersion.v1 });
         try {
             await client.connect();
 
-            await client.db(databaseAndCollection.db).collection(databaseAndCollection.collection).insertOne(userone + " vs " + usertwo);
+            let battle = {
+                playerone: playerone,
+                playertwo: playertwo,
+                winner: winner
+            }
+            await client.db(databaseAndCollection.db).collection(databaseAndCollection.collection).insertOne(battle);
 
-            const response = await fetch(`https://api.spotify.com/v1/${winner}`, {
+            const options = {
+                method: 'GET',
+                url: 'https://spotify23.p.rapidapi.com/user_profile/',
+                params: {
+                  id: winUser
+                },
                 headers: {
-                    Authorization: 'Bearer ' + accessToken
+                  'X-RapidAPI-Key': '790b387647msh692e95b2ee76721p124f8bjsn13345f109828',
+                  'X-RapidAPI-Host': 'spotify23.p.rapidapi.com'
                 }
-            });
+            };
+              
+            try {
+                const response = await axios.request(options);
 
-            const data = await response.json();
-            const img = document.querySelector("#winnerImage");
+                const variables = {
+                    playerone: playerone,
+                    playertwo: playertwo,
+                    winner: winner,
+                    followCount: response.data.total_public_playlists_count
+                };
 
-            img.src = json["images"].url;
-            imageUrl.width = json["images"].width;
-            imageUrl.height = json["images"].height;
-
-            res.render("battleResult", variables);
+                res.render("battleResult", variables);
+            } 
+            catch (error) {
+                console.error(error);
+            }
         } catch (e) {
             console.error(e);
         } finally {
@@ -109,11 +108,11 @@ app.get("/history", (req,res) => {
 
             let code = "";
             result.forEach(elt => {
-                code += `<li> ${elt} </li>`;
+                code += `<li>${elt.playerone}  vs ${elt.playertwo}</li>`;
             });
 
             const variables = {
-                listBattles: `<ol>
+                listHistory: `<ol>
                             ${code}
                             </ol>`
             };
